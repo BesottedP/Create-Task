@@ -1,47 +1,51 @@
-# fuck you, your code is mine. We live in a communist world here
+# imports
 import random as rand
 import turtle as t
 import numpy as np
 
-# box time
+# window setup
 wn = t.Screen()
 wn.bgcolor("white")
 wn.setup(700, 700)
 
-# genetically mutating a turtle
+# turtle setup
 drawer = t.Turtle()
 drawer.penup()
 drawer.shapesize(10)
 drawer.color("white")
 
-# around the world
+# global variables
 size = 10
 list = np.zeros((size, size), dtype=int)
 selected_gem = (None, None)  # Tuple of (row, col)
 
-# i wanna fill wes' slots
+#fill 
 def fillSlots():
     for row in range(size-1, -1, -1):
         for column in range(size-1, -1, -1):
             if (list[row][column] == 0):
                 list[row][column] = rand.randint(1, 5)
 
-# holy fucking shit i dont want to explain this code.
+
 def swap(direction):
     temp = list[selected_gem[0]][selected_gem[1]]
     try:
-        match direction:
-            case "down":
+        if direction == "down": 
+                selected_gem2 = (selected_gem[0]+1, selected_gem[1])
+                drawboard(selected_gem, selected_gem2)
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]+1][[selected_gem[1]]]
                 list[selected_gem[0]+1][[selected_gem[1]]] = temp
+                
                 if (checkMatchHor() == False and checkMatchVert() == False):
                     list[selected_gem[0]+1][[selected_gem[1]]
                                             ] = list[selected_gem[0]][selected_gem[1]]
                     list[selected_gem[0]][selected_gem[1]] = temp
-            case "up":
+        elif direction == "up":
                 if (selected_gem[0] == 0):
-                    raise Exception  # suicide
+                    raise Exception 
+                selected_gem2 = (selected_gem[0]-1, selected_gem[1])
+                drawboard(selected_gem2, selected_gem)
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]-1][[selected_gem[1]]]
                 list[selected_gem[0]-1][[selected_gem[1]]] = temp
@@ -49,9 +53,11 @@ def swap(direction):
                     list[selected_gem[0]-1][[selected_gem[1]]
                                             ] = list[selected_gem[0]][selected_gem[1]]
                     list[selected_gem[0]][selected_gem[1]] = temp
-            case "left":
+        elif direction == "left":
                 if (selected_gem[1] == 0):
-                    raise Exception  # suicide sequel
+                    raise Exception
+                selected_gem2 = (selected_gem[0], selected_gem[1]-1)
+                drawboard(selected_gem, selected_gem2)
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]][[selected_gem[1]-1]]
                 list[selected_gem[0]][[selected_gem[1]-1]] = temp
@@ -59,7 +65,9 @@ def swap(direction):
                     list[selected_gem[0]][[selected_gem[1]-1]
                                           ] = list[selected_gem[0]][selected_gem[1]]
                     list[selected_gem[0]][selected_gem[1]] = temp
-            case "right":
+        elif direction == "right":
+                selected_gem2 = (selected_gem[0], selected_gem[1]+1)
+                drawboard(selected_gem2, selected_gem)
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]][[selected_gem[1]+1]]
                 list[selected_gem[0]][[selected_gem[1]+1]] = temp
@@ -70,7 +78,20 @@ def swap(direction):
     except:  # retrieving the dead bodies
         print("Invalid Move")
 
-# i dont wanna explain this either
+def drawswap(direction):
+    if direction == "right":
+        p = True
+        while p:
+            t.clear()
+            
+
+    if direction == "left":
+        #TODO
+
+
+
+
+# checks for matches
 def checkMatchHor():
     matchMade = False
     for row in range(0, size, 1):
@@ -106,7 +127,6 @@ def checkMatchVert():
 
 # i forget how this works, just think gravity ig
 def dropJewel():
-    recurse = False
     for row in range(size-1, 0, -1):
         for column in range(0, size, 1):
             x = list[row][column]
@@ -114,30 +134,50 @@ def dropJewel():
                 list[row][column] = list[row-1][column]
                 list[row-1][column] = 0
                 if (list[row][column] != 0):
-                    recurse = True
-    if (recurse == True):  # side note: recursion can suck my ass
-        dropJewel()
+                    dropJewel()
 
 # segregate the turtles
 def turtleChange(num):
     colors = ["white", "red", "green", "orange", "blue", "brown"]
     shapes = ["circle", "circle", "triangle", "square", "turtle", "arrow"]
-    size = [1.5, 1, 1, 1, 1, 1]
+    tsize = [1.5, 1, 1, 1, 1, 1]
 
     drawer.color(colors[num])
     drawer.shape(shapes[num])
-    drawer.shapesize(size[num])
+    drawer.shapesize(tsize[num])
 
 # bobby wrote this go ask him
-def drawboard():
-    global list, size
-    for row in range(0, size, 1):
-        for column in range(size-1, -1, -1):
-            drawer.goto(column*50-200, row*50-200)
-            turtleChange(list[(size-1)-row][column])
-            drawer.stamp()
+def startboard():
+    t = True
+    while t:
+        t.tracer(0,0)
+        global list, size
+        for row in range(0, size, 1):
+            for column in range(size-1, -1, -1):
+                drawer.goto(column*-200, row*50-200)
+                turtleChange(list[(size-1)-row][column])
+                drawer.stamp()
+                t.update()
+        t = False
 
-# dont you wanna play the game you dumb shit??
+def drawboard(exception1, exception2): #put after the swap in the code above not before
+    t = True
+    while t:
+        t.tracer(0,0)
+        global list, size
+        for row in range(0, size, 1):
+            for column in range(size-1, -1, -1):
+                drawer.goto(column*50-200, row*50-200)
+                if (column*50-200, row*50-200)==exception2 and exception1[0] == exception2[0]: #across checking
+                    drawer.goto(column*50-200-50, row*50-200)
+                if (column*50-200, row*50-200)==exception1 and exception1[0] == exception2[0]: #across checking
+                    drawer.goto(column*50-200+50, row*50-200)
+                turtleChange(list[(size-1)-row][column])
+                drawer.stamp()
+                t.update()
+        t = False
+
+# start
 def startGame():
     recurse = False
     fillSlots()
@@ -151,7 +191,7 @@ def startGame():
         print()
         startGame()
 
-# WHAT THE FUCK IS A TUPLE
+# gets the coordinates of the gem pressed 
 def select_gem(x, y):
     global selected_gem
     column = round((x+200)/50)
@@ -159,10 +199,10 @@ def select_gem(x, y):
     selected_gem = (row, column)
     print(selected_gem)
 
-# key binds (aka redundant pieces of shit just let me use arguments in onkeypress oml)
+# key binds 
 def up():
     swap("up")
-
+    
 def left():
     swap("left")
 
@@ -171,6 +211,7 @@ def down():
 
 def right():
     swap("right")
+    drawswap("right")
 
 def printBoard():
     print(list)
@@ -184,7 +225,7 @@ def test():
 def selectedGem():
     print(selected_gem)
 
-# your keyboard will stalk you now
+# listening for key presses
 wn.onscreenclick(select_gem)
 wn.onkeypress(up, "w")
 wn.onkeypress(left, "a")
@@ -193,12 +234,11 @@ wn.onkeypress(right, "d")
 wn.onkeypress(printBoard, "p")
 wn.onkeypress(test, "t")
 wn.onkeypress((selectedGem), "g")
-wn.onkeypress(drawboard, "u")
+wn.onkeypress(startboard, "u")
 wn.listen()
 
-# yeah you need this
+# main functions
 startGame()
-drawboard()
+startboard()
 
-# keeps the game open so you can fucking play it
 wn.mainloop()
