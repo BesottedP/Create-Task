@@ -15,7 +15,7 @@ drawer.shapesize(10)
 drawer.color("white")
 
 # global variables
-size = 10
+size = 4
 list = np.zeros((size, size), dtype=int)
 selected_gem = (None, None)  # Tuple of (row, col)
 
@@ -32,7 +32,7 @@ def swap(direction):
     try:
         if direction == "down": 
                 selected_gem2 = (selected_gem[0]+1, selected_gem[1])
-                drawboard(selected_gem, selected_gem2)
+                drawswap(selected_gem, selected_gem2)
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]+1][[selected_gem[1]]]
                 list[selected_gem[0]+1][[selected_gem[1]]] = temp
@@ -41,11 +41,12 @@ def swap(direction):
                     list[selected_gem[0]+1][[selected_gem[1]]
                                             ] = list[selected_gem[0]][selected_gem[1]]
                     list[selected_gem[0]][selected_gem[1]] = temp
+                drawboard()
         elif direction == "up":
                 if (selected_gem[0] == 0):
                     raise Exception 
-                selected_gem2 = (selected_gem[0]-1, selected_gem[1])
-                drawboard(selected_gem2, selected_gem)
+                # selected_gem2 = (selected_gem[0]-1, selected_gem[1])
+                # drawswap(selected_gem2, selected_gem)
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]-1][[selected_gem[1]]]
                 list[selected_gem[0]-1][[selected_gem[1]]] = temp
@@ -56,8 +57,8 @@ def swap(direction):
         elif direction == "left":
                 if (selected_gem[1] == 0):
                     raise Exception
-                selected_gem2 = (selected_gem[0], selected_gem[1]-1)
-                drawboard(selected_gem, selected_gem2)
+                # selected_gem2 = (selected_gem[0], selected_gem[1]-1)
+                # drawswap(selected_gem, selected_gem2)
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]][[selected_gem[1]-1]]
                 list[selected_gem[0]][[selected_gem[1]-1]] = temp
@@ -66,8 +67,8 @@ def swap(direction):
                                           ] = list[selected_gem[0]][selected_gem[1]]
                     list[selected_gem[0]][selected_gem[1]] = temp
         elif direction == "right":
-                selected_gem2 = (selected_gem[0], selected_gem[1]+1)
-                drawboard(selected_gem2, selected_gem)
+                # selected_gem2 = (selected_gem[0], selected_gem[1]+1)
+                # drawswap(selected_gem2, selected_gem)
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]][[selected_gem[1]+1]]
                 list[selected_gem[0]][[selected_gem[1]+1]] = temp
@@ -75,21 +76,8 @@ def swap(direction):
                     list[selected_gem[0]][[selected_gem[1]+1]
                                           ] = list[selected_gem[0]][selected_gem[1]]
                     list[selected_gem[0]][selected_gem[1]] = temp
-    except:  # retrieving the dead bodies
+    except:
         print("Invalid Move")
-
-def drawswap(direction):
-    if direction == "right":
-        p = True
-        while p:
-            t.clear()
-            
-
-    if direction == "left":
-        #TODO
-
-
-
 
 # checks for matches
 def checkMatchHor():
@@ -147,35 +135,47 @@ def turtleChange(num):
     drawer.shapesize(tsize[num])
 
 # bobby wrote this go ask him
-def startboard():
-    t = True
-    while t:
-        t.tracer(0,0)
-        global list, size
-        for row in range(0, size, 1):
-            for column in range(size-1, -1, -1):
-                drawer.goto(column*-200, row*50-200)
-                turtleChange(list[(size-1)-row][column])
-                drawer.stamp()
-                t.update()
-        t = False
-
-def drawboard(exception1, exception2): #put after the swap in the code above not before
-    t = True
-    while t:
+def drawboard():
+    tf = True
+    while tf:
         t.tracer(0,0)
         global list, size
         for row in range(0, size, 1):
             for column in range(size-1, -1, -1):
                 drawer.goto(column*50-200, row*50-200)
-                if (column*50-200, row*50-200)==exception2 and exception1[0] == exception2[0]: #across checking
-                    drawer.goto(column*50-200-50, row*50-200)
-                if (column*50-200, row*50-200)==exception1 and exception1[0] == exception2[0]: #across checking
-                    drawer.goto(column*50-200+50, row*50-200)
                 turtleChange(list[(size-1)-row][column])
                 drawer.stamp()
                 t.update()
-        t = False
+        tf = False
+
+def drawswap(exception1, exception2): #put after the swap in the code above not before
+    y=0
+    x=0
+    while y<51:
+        t.tracer(0,0)
+        global list, size
+        for row in range(0, size, 1):
+            for column in range(size-1, -1, -1):
+                drawer.goto(column*50-200, row*50-200)
+                if (row, column)==exception2 and exception1[0] == exception2[0]: #across checking ::could be plus y
+                    drawer.goto(column*50-200-y, row*50-200)
+                    print(1)
+                if (row, column)==exception1 and exception1[0] == exception2[0]: #across checking  :: could be -y
+                    drawer.goto(column*50-200+y, row*50-200)
+                    print(2)
+                if (row, column)==exception2 and exception1[1] == exception2[1]: #could be -x
+                    drawer.goto(row*50-200, column*50-200-x)
+                    print(3)
+                if (row, column)==exception1 and exception1[1] == exception2[1]: #could be +x
+                    drawer.goto(row*50-200, column*50-200+x)
+                    print(4)
+                turtleChange(list[(size-1)-row][column])
+                drawer.stamp()
+        t.update()
+        drawer.clear()
+        y+=1
+        x+=1
+    #startboard()
 
 # start
 def startGame():
@@ -211,7 +211,6 @@ def down():
 
 def right():
     swap("right")
-    drawswap("right")
 
 def printBoard():
     print(list)
@@ -231,14 +230,17 @@ wn.onkeypress(up, "w")
 wn.onkeypress(left, "a")
 wn.onkeypress(down, "s")
 wn.onkeypress(right, "d")
+
+
+
 wn.onkeypress(printBoard, "p")
 wn.onkeypress(test, "t")
 wn.onkeypress((selectedGem), "g")
-wn.onkeypress(startboard, "u")
+wn.onkeypress(drawboard, "u")
 wn.listen()
 
 # main functions
 startGame()
-startboard()
+drawboard()
 
 wn.mainloop()
