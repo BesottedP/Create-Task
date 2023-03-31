@@ -19,7 +19,7 @@ size = 10
 list = np.zeros((size, size), dtype=int)
 selected_gem = (None, None)  # Tuple of (row, col)
 
-#fill 
+#fill
 def fillSlots():
     for row in range(size-1, -1, -1):
         for column in range(size-1, -1, -1):
@@ -30,39 +30,56 @@ def fillSlots():
 def swap(direction):
     temp = list[selected_gem[0]][selected_gem[1]]
     try:
-        if direction == "down": 
+        if direction == "down":
+                if (selected_gem[0] == size-1):
+                        raise Exception
+                selected_gem2 = (selected_gem[0]+1, selected_gem[1])
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]+1][[selected_gem[1]]]
                 list[selected_gem[0]+1][[selected_gem[1]]] = temp
+                drawswap(selected_gem, selected_gem2)
                 if (checkMatchHor() == False and checkMatchVert() == False):
                     list[selected_gem[0]+1][[selected_gem[1]]
                                             ] = list[selected_gem[0]][selected_gem[1]]
                     list[selected_gem[0]][selected_gem[1]] = temp
+                    drawswap(selected_gem, selected_gem2)
         elif direction == "up":
                 if (selected_gem[0] == 0):
-                    raise Exception 
+                    raise Exception
+                selected_gem2 = (selected_gem[0]-1, selected_gem[1])
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]-1][[selected_gem[1]]]
                 list[selected_gem[0]-1][[selected_gem[1]]] = temp
+                drawswap(selected_gem2, selected_gem)
                 if (checkMatchHor() == False and checkMatchVert() == False):
                     list[selected_gem[0]-1][[selected_gem[1]]
                                             ] = list[selected_gem[0]][selected_gem[1]]
                     list[selected_gem[0]][selected_gem[1]] = temp
+                    drawswap(selected_gem2, selected_gem)
         elif direction == "left":
                 if (selected_gem[1] == 0):
                     raise Exception
+                selected_gem2 = (selected_gem[0], selected_gem[1]-1)
+                drawswap(selected_gem, selected_gem2)
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]][[selected_gem[1]-1]]
                 list[selected_gem[0]][[selected_gem[1]-1]] = temp
                 if (checkMatchHor() == False and checkMatchVert() == False):
+                    drawswap(selected_gem, selected_gem2)
                     list[selected_gem[0]][[selected_gem[1]-1]
                                           ] = list[selected_gem[0]][selected_gem[1]]
                     list[selected_gem[0]][selected_gem[1]] = temp
+
         elif direction == "right":
+                if (selected_gem[1] == size-1):
+                    raise Exception
+                selected_gem2 = (selected_gem[0], selected_gem[1]+1)
+                drawswap(selected_gem2, selected_gem)
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]][[selected_gem[1]+1]]
                 list[selected_gem[0]][[selected_gem[1]+1]] = temp
                 if (checkMatchHor() == False and checkMatchVert() == False):
+                    drawswap(selected_gem2, selected_gem)
                     list[selected_gem[0]][[selected_gem[1]+1]
                                           ] = list[selected_gem[0]][selected_gem[1]]
                     list[selected_gem[0]][selected_gem[1]] = temp
@@ -154,8 +171,7 @@ def startGame():
         drawer.clear()
     drawboard()
 
-
-# gets the coordinates of the gem pressed 
+# gets the coordinates of the gem pressed
 def select_gem(x, y):
     global selected_gem
     column = round((x+200)/50)
@@ -163,10 +179,10 @@ def select_gem(x, y):
     selected_gem = (row, column)
     print(selected_gem)
 
-# key binds 
+# key binds
 def up():
     swap("up")
-    
+   
 def left():
     swap("left")
 
@@ -202,7 +218,6 @@ wn.onkeypress(drawboard, "u")
 wn.listen()
 
 # main functions
-fillSlots()
 startGame()
 
 wn.mainloop()
