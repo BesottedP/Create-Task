@@ -32,16 +32,17 @@ def swap(direction):
     try:
         if direction == "down": 
                 selected_gem2 = (selected_gem[0]+1, selected_gem[1])
-                drawswap(selected_gem, selected_gem2)
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]+1][[selected_gem[1]]]
                 list[selected_gem[0]+1][[selected_gem[1]]] = temp
-                
+                print("start swap")
+                drawswap(selected_gem, selected_gem2)
+                print("done swap")
                 if (checkMatchHor() == False and checkMatchVert() == False):
                     list[selected_gem[0]+1][[selected_gem[1]]
                                             ] = list[selected_gem[0]][selected_gem[1]]
                     list[selected_gem[0]][selected_gem[1]] = temp
-                drawboard()
+                #drawboard()
         elif direction == "up":
                 if (selected_gem[0] == 0):
                     raise Exception 
@@ -142,8 +143,8 @@ def drawboard():
         global list, size
         for row in range(0, size, 1):
             for column in range(size-1, -1, -1):
-                drawer.goto(column*50-200, row*50-200)
-                turtleChange(list[(size-1)-row][column])
+                drawer.goto(column*50-200, 250-(row*50))
+                turtleChange(list[row][column])
                 drawer.stamp()
                 t.update()
         tf = False
@@ -156,20 +157,21 @@ def drawswap(exception1, exception2): #put after the swap in the code above not 
         global list, size
         for row in range(0, size, 1):
             for column in range(size-1, -1, -1):
-                drawer.goto(column*50-200, row*50-200)
-                if (row, column)==exception2 and exception1[0] == exception2[0]: #across checking ::could be plus y
-                    drawer.goto(column*50-200-y, row*50-200)
-                    print(1)
-                if (row, column)==exception1 and exception1[0] == exception2[0]: #across checking  :: could be -y
-                    drawer.goto(column*50-200+y, row*50-200)
-                    print(2)
-                if (row, column)==exception2 and exception1[1] == exception2[1]: #could be -x
-                    drawer.goto(row*50-200, column*50-200-x)
-                    print(3)
-                if (row, column)==exception1 and exception1[1] == exception2[1]: #could be +x
-                    drawer.goto(row*50-200, column*50-200+x)
-                    print(4)
-                turtleChange(list[(size-1)-row][column])
+                drawer.goto(column*50-200, 250-(row*50))
+                # if (row, column)==exception2 and exception1[0] == exception2[0]: #across checking ::could be plus y
+                #     drawer.goto(column*50-200-y, row*50-200)
+                #     print(1)
+                # if (row, column)==exception1 and exception1[0] == exception2[0]: #across checking  :: could be -y
+                #     drawer.goto(column*50-200+y, row*50-200)
+                #     print(2)
+                # if (row, column)==exception2 and exception1[1] == exception2[1]: #could be -x
+                #     drawer.goto(row*50-200, 250-(row*50)+y)
+                #     print(3)
+                # if (row, column)==exception1 and exception1[1] == exception2[1]: #could be +x
+                #     drawer.goto(row*50-200, 250-(row*50))
+                #     print(4)
+                print("test")
+                turtleChange(list[row][column])
                 drawer.stamp()
         t.update()
         drawer.clear()
