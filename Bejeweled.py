@@ -87,6 +87,78 @@ def swap(direction):
     except:
         print("Invalid Move")
     drawboard()
+
+# checks for matches
+def checkMatchHor():
+    matchMade = False
+    for row in range(0, size, 1):
+        for column in range(0, size-1, 1):
+            counter = 0
+            for remainingcol in range(1, size-column, 1):
+                if list[row][column] == list[row][column+remainingcol]:
+                    counter += 1
+                else:
+                    break
+            if (counter >= 2):
+                matchMade = True
+                for i in range(0, counter+1, 1):
+                    list[row][column+i] = 0
+    return matchMade
+
+# read above comment
+def checkMatchVert():
+    matchMade = False
+    for column in range(0, size, 1):
+        for row in range(0, size-1, 1):
+            counter = 0
+            for remainingrow in range(1, size-row, 1):
+                if list[row][column] == list[row+remainingrow][column]:
+                    counter += 1
+                else:
+                    break
+            if (counter >= 2):
+                matchMade = True
+                for i in range(0, counter+1, 1):
+                    list[row+i][column] = 0
+    return matchMade
+
+# i forget how this works, just think gravity ig
+def dropJewel():
+    for row in range(size-1, 0, -1):
+        for column in range(0, size, 1):
+            x = list[row][column]
+            if (x == 0):
+                list[row][column] = list[row-1][column]
+                list[row-1][column] = 0
+                if (list[row][column] != 0):
+                    dropJewel()
+
+# segregate the turtles
+def turtleChange(num):
+    colors = ["white", "red", "green", "orange", "blue", "brown"]
+    shapes = ["circle", "circle", "triangle", "square", "turtle", "arrow"]
+    tsize = [1.5, 1, 1, 1, 1, 1]
+
+    drawer.color(colors[num])
+    drawer.shape(shapes[num])
+    drawer.shapesize(tsize[num])
+
+# bobby wrote this go ask him
+def drawboard():
+    tf = True
+    while tf:
+        t.tracer(0,0)
+        global list, size
+        for row in range(0, size, 1):
+            for column in range(size-1, -1, -1):
+                drawer.goto(column*50-200, 250-(row*50))
+                turtleChange(list[row][column])
+                drawer.stamp()
+                t.update()
+        tf = False
+
+def drawswap(exception1, exception2): #put after the swap in the code above not before
+    y=0
     while y<51:
         t.tracer(0,0)
         global list, size
@@ -165,6 +237,8 @@ wn.onkeypress(up, "w")
 wn.onkeypress(left, "a")
 wn.onkeypress(down, "s")
 wn.onkeypress(right, "d")
+
+
 
 wn.onkeypress(printBoard, "p")
 wn.onkeypress(test, "t")
