@@ -31,7 +31,6 @@ def swap(direction):
     temp = list[selected_gem[0]][selected_gem[1]]
     try:
         if direction == "down": 
-                selected_gem2 = (selected_gem[0]+1, selected_gem[1])
                 list[selected_gem[0]][selected_gem[1]
                                       ] = list[selected_gem[0]+1][[selected_gem[1]]]
                 list[selected_gem[0]+1][[selected_gem[1]]] = temp
@@ -69,6 +68,8 @@ def swap(direction):
                     list[selected_gem[0]][selected_gem[1]] = temp
     except:
         print("Invalid Move")
+    startGame()
+
 
 # checks for matches
 def checkMatchHor():
@@ -136,13 +137,12 @@ def drawboard():
                 drawer.goto(column*50-200, 250-(row*50))
                 turtleChange(list[row][column])
                 drawer.stamp()
-                t.update()
+        t.update()
         tf = False
 
 # start
 def startGame():
     recurse = False
-    fillSlots()
     if checkMatchHor() == True:
         recurse = True
     if checkMatchVert() == True:
@@ -150,8 +150,10 @@ def startGame():
     dropJewel()
     fillSlots()
     if recurse == True:
-        print()
         startGame()
+        drawer.clear()
+    drawboard()
+
 
 # gets the coordinates of the gem pressed 
 def select_gem(x, y):
@@ -200,7 +202,7 @@ wn.onkeypress(drawboard, "u")
 wn.listen()
 
 # main functions
+fillSlots()
 startGame()
-drawboard()
 
 wn.mainloop()
