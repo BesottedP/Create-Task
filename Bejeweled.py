@@ -84,7 +84,7 @@ def swap(direction):
                                           ] = list[selected_gem[0]][selected_gem[1]]
                     list[selected_gem[0]][selected_gem[1]] = temp
     except:
-        print("Invalid Move")
+        print("Invalid Move")                
     startGame()
 
 
@@ -156,6 +156,34 @@ def drawboard():
                 drawer.stamp()
         t.update()
         tf = False
+
+def drawswap(exception1, exception2): #put after the swap in the code above not before
+    y=0
+    while y<51:
+        t.tracer(0,0)
+        global list, size
+        for row in range(0, size, 1):
+            for column in range(size-1, -1, -1):
+                drawer.goto(column*50-200, 250-(row*50))
+                if (row, column)==exception2 and exception1[0] == exception2[0]: #across checking ::could be plus y
+                    drawer.goto(column*50-200+y, 250-(row*50))
+                    print(1)
+                if (row, column)==exception1 and exception1[0] == exception2[0]: #across checking  :: could be -y
+                    drawer.goto(column*50-200-y, 250-(row*50))
+                    print(2)
+                if (row, column)==exception2 and exception1[1] == exception2[1]: #could be -x
+                    drawer.goto(column*50-200, 300-(row*50)-y)
+                    print(3)
+                if (row, column)==exception1 and exception1[1] == exception2[1]: #could be +x
+                    drawer.goto(column*50-200, 200-(row*50)+y)
+                    print(4)
+                # print("test")
+                turtleChange(list[row][column])
+                drawer.stamp()
+        
+        t.update()
+        drawer.clear()
+        y+=2
 
 # start
 def startGame():
