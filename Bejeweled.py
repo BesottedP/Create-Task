@@ -2,6 +2,7 @@
 import random as rand
 import turtle as t
 import numpy as np
+import time
 
 # window setup
 wn = t.Screen()
@@ -15,6 +16,8 @@ drawer.shapesize(10)
 drawer.color("white")
 
 # global variables
+game_start = False
+score = 0
 size = 10
 list = np.zeros((size, size), dtype=int)
 selected_gem = (None, None)  # Tuple of (row, col)
@@ -25,7 +28,7 @@ def fillSlots():
         for column in range(size-1, -1, -1):
             if (list[row][column] == 0):
                 list[row][column] = rand.randint(1, 5)
-
+    drawboard()
 
 def swap(direction):
     temp = list[selected_gem[0]][selected_gem[1]]
@@ -90,6 +93,7 @@ def swap(direction):
 
 # checks for matches
 def checkMatchHor():
+    global score
     matchMade = False
     for row in range(0, size, 1):
         for column in range(0, size-1, 1):
@@ -101,12 +105,14 @@ def checkMatchHor():
                     break
             if (counter >= 2):
                 matchMade = True
+                score += counter
                 for i in range(0, counter+1, 1):
                     list[row][column+i] = 0
     return matchMade
 
 # read above comment
 def checkMatchVert():
+    global score
     matchMade = False
     for column in range(0, size, 1):
         for row in range(0, size-1, 1):
@@ -118,6 +124,7 @@ def checkMatchVert():
                     break
             if (counter >= 2):
                 matchMade = True
+                score += counter
                 for i in range(0, counter+1, 1):
                     list[row+i][column] = 0
     return matchMade
@@ -167,16 +174,12 @@ def drawswap(exception1, exception2): #put after the swap in the code above not 
                 drawer.goto(column*50-200, 250-(row*50))
                 if (row, column)==exception2 and exception1[0] == exception2[0]: #across checking ::could be plus y
                     drawer.goto(column*50-200+y, 250-(row*50))
-                    print(1)
                 if (row, column)==exception1 and exception1[0] == exception2[0]: #across checking  :: could be -y
                     drawer.goto(column*50-200-y, 250-(row*50))
-                    print(2)
                 if (row, column)==exception2 and exception1[1] == exception2[1]: #could be -x
                     drawer.goto(column*50-200, 300-(row*50)-y)
-                    print(3)
                 if (row, column)==exception1 and exception1[1] == exception2[1]: #could be +x
                     drawer.goto(column*50-200, 200-(row*50)+y)
-                    print(4)
                 # print("test")
                 turtleChange(list[row][column])
                 drawer.stamp()
@@ -185,6 +188,40 @@ def drawswap(exception1, exception2): #put after the swap in the code above not 
         drawer.clear()
         y+=2
 
+def drawdrop():
+    #checks how many spots each column needs to decend
+    dropamount = []
+    dropindex = []
+    for column in range(0, size, 1):
+        amount = 0
+        index = -1
+        for row in range(0, size-1, 1):
+            if (list[row][column] == 0):
+                amount += 1
+                if (index == -1):
+                    index = row
+        dropamount.append(amount)
+        dropindex.append(index)
+
+    y = 0
+    while y <= max(dropamount) * 50:
+        t.tracer(0,0)
+        for row in range(0, size, 1):
+            for column in range(0, size, 1):
+                drawer.goto(column*50-200, 250-(row*50))
+                if row < dropindex[column]:
+                    if y < dropamount[column]*50:
+                        drawer.goto(column*50-200, 250-(row*50)-y)  
+                    else:
+                        drawer.goto(column*50-200, 250-(row*50)-(50*dropamount[column]))
+                turtleChange(list[row][column])
+                if list[row][column] != 0:
+                    drawer.stamp()
+        t.update()
+        drawer.clear()
+        y+=5
+    time.sleep(0.15)
+
 # start
 def startGame():
     recurse = False
@@ -192,11 +229,14 @@ def startGame():
         recurse = True
     if checkMatchVert() == True:
         recurse = True
+    if game_start == True:
+        drawdrop()
     dropJewel()
     fillSlots()
     if recurse == True:
         startGame()
         drawer.clear()
+    drawer.clear()
     drawboard()
 
 # gets the coordinates of the gem pressed
@@ -224,10 +264,8 @@ def printBoard():
     print(list)
 
 def test():
-    print(list[0][0])
-    print(list[-1][0])
-    print(list[0][-1])
-    print(list[-1][-1])
+    global score
+    print(score)
 
 def selectedGem():
     print(selected_gem)
@@ -247,5 +285,6 @@ wn.listen()
 
 # main functions
 startGame()
+game_start = True
 
 wn.mainloop()
