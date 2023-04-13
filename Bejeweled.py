@@ -28,7 +28,6 @@ def fillSlots():
         for column in range(size-1, -1, -1):
             if (list[row][column] == 0):
                 list[row][column] = rand.randint(1, 5)
-    drawboard()
 
 def swap(direction):
     temp = list[selected_gem[0]][selected_gem[1]]
@@ -131,14 +130,20 @@ def checkMatchVert():
 
 # i forget how this works, just think gravity ig
 def dropJewel():
-    for row in range(size-1, 0, -1):
-        for column in range(0, size, 1):
-            x = list[row][column]
-            if (x == 0):
-                list[row][column] = list[row-1][column]
-                list[row-1][column] = 0
-                if (list[row][column] != 0):
-                    dropJewel()
+    for counter in range(51):
+        for row in range(0, size, 1):
+            for column in range(0, size, 1):
+                y = list[row][column]
+                if (row < size):
+                    x = list[row+1][column]
+                if (x == 0 and counter<=49):
+                    drawer.goto(column*50-200-counter, 250-(row*50))
+                    drawer.stamp()
+                if (x == 0 and counter>49):
+                    list[row][column] = list[row-1][column]
+                    list[row-1][column] = 0
+    if (list[row][column] != 0):
+        dropJewel()
 
 # segregate the turtles
 def turtleChange(num):
@@ -194,24 +199,22 @@ def drawdrop():
     for row in range(0, size, 1):
         for column in range(0, size, 1):
             amount = 0
-            for remcol in range(column+1, size, 1):
-                if (list[column][row] != 0 and list[remcol][row] == 0):
+            for remrow in range(row+1, size, 1):
+                if (list[row][column] != 0 and list[remrow][column] == 0):
                     amount += 1
             dropamount.append(amount)
+    print(dropamount)
 
+    
     y = 0
     while y <= max(dropamount) * 50:
         t.tracer(0,0)
-        for row in range(0, size, 1):
-            for column in range(0, size, 1):
-                drawer.goto(column*50-200, 250-(row*50))
-                if y < dropamount[(column * 10) + row]*50:
-                    drawer.goto(column*50-200, 250-(row*50)-y)  
-                else:
-                    drawer.goto(column*50-200, 250-(row*50)-(50*dropamount[column]))
-                turtleChange(list[row][column])
-                if list[row][column] != 0:
-                    drawer.stamp()
+        #run through the dropamount list, then use where it is in that list where the numbers are, if there is a #=!0 drop and then subtract one. Rescurse. Once everything isn't 0, stop recursing
+        for num in dropamount:
+            if num>0:
+                row = num%10
+                column = num/10
+
         t.update()
         drawer.clear()
         y+=5
@@ -223,15 +226,14 @@ def startGame():
         recurse = True
     if checkMatchVert() == True:
         recurse = True
-    if game_start == True:
-        drawdrop()
+    # if game_start == True:
+    #     drawdrop()
     dropJewel()
     fillSlots()
     if game_start:
         time.sleep(0.25)
     if recurse == True:
         startGame()
-        drawer.clear()
     drawer.clear()
     drawboard()
 
