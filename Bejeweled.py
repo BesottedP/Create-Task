@@ -1,290 +1,105 @@
-# imports
-import random as rand
-import turtle as t
-import numpy as np
+import turtle
 import time
 
-# window setup
-wn = t.Screen()
-wn.bgcolor("white")
-wn.setup(700, 700)
+while True:
+    turtle.tracer(0,0)
 
-# turtle setup
-drawer = t.Turtle()
-drawer.penup()
-drawer.shapesize(10)
-drawer.color("white")
+    painter = turtle.Turtle()
+    painter.hideturtle()
+    turtle.hideturtle()
+    painter.pensize(2)
+    painter.color("white")
 
-# global variables
-game_start = False
-score = 0
-size = 10
-list = np.zeros((size, size), dtype=int)
-selected_gem = (None, None)  # Tuple of (row, col)
+    screen = turtle.Screen()
+    screen.setup(852,531)
+    screen.bgpic("background_3x.gif")
 
-#fill
-def fillSlots():
-    for row in range(size-1, -1, -1):
-        for column in range(size-1, -1, -1):
-            if (list[row][column] == 0):
-                list[row][column] = rand.randint(1, 5)
-    drawboard()
+    # Game box / boundaries
+    painter.penup()
+    painter.goto(-130, -215)
+    painter.pendown()
+    painter.right(45)
+    painter.circle(325, 360, 4)
 
-def swap(direction):
-    temp = list[selected_gem[0]][selected_gem[1]]
-    try:
-        if direction == "down":
-                if (selected_gem[0] == size-1):
-                        raise Exception
-                selected_gem2 = (selected_gem[0]+1, selected_gem[1])
-                list[selected_gem[0]][selected_gem[1]
-                                      ] = list[selected_gem[0]+1][[selected_gem[1]]]
-                list[selected_gem[0]+1][[selected_gem[1]]] = temp
-                drawswap(selected_gem, selected_gem2)
-                if (checkMatchHor() == False and checkMatchVert() == False):
-                    list[selected_gem[0]+1][[selected_gem[1]]
-                                            ] = list[selected_gem[0]][selected_gem[1]]
-                    list[selected_gem[0]][selected_gem[1]] = temp
-                    drawswap(selected_gem, selected_gem2)
-        elif direction == "up":
-                if (selected_gem[0] == 0):
-                    raise Exception
-                selected_gem2 = (selected_gem[0]-1, selected_gem[1])
-                list[selected_gem[0]][selected_gem[1]
-                                      ] = list[selected_gem[0]-1][[selected_gem[1]]]
-                list[selected_gem[0]-1][[selected_gem[1]]] = temp
-                drawswap(selected_gem2, selected_gem)
-                if (checkMatchHor() == False and checkMatchVert() == False):
-                    list[selected_gem[0]-1][[selected_gem[1]]
-                                            ] = list[selected_gem[0]][selected_gem[1]]
-                    list[selected_gem[0]][selected_gem[1]] = temp
-                    drawswap(selected_gem2, selected_gem)
-        elif direction == "left":
-                if (selected_gem[1] == 0):
-                    raise Exception
-                selected_gem2 = (selected_gem[0], selected_gem[1]-1)
-                drawswap(selected_gem, selected_gem2)
-                list[selected_gem[0]][selected_gem[1]
-                                      ] = list[selected_gem[0]][[selected_gem[1]-1]]
-                list[selected_gem[0]][[selected_gem[1]-1]] = temp
-                if (checkMatchHor() == False and checkMatchVert() == False):
-                    drawswap(selected_gem, selected_gem2)
-                    list[selected_gem[0]][[selected_gem[1]-1]
-                                          ] = list[selected_gem[0]][selected_gem[1]]
-                    list[selected_gem[0]][selected_gem[1]] = temp
+    # Game title box
+    painter.penup()
+    painter.goto(-400, 175)
+    painter.setheading(0)
+    painter.pendown()
 
-        elif direction == "right":
-                if (selected_gem[1] == size-1):
-                    raise Exception
-                selected_gem2 = (selected_gem[0], selected_gem[1]+1)
-                drawswap(selected_gem2, selected_gem)
-                list[selected_gem[0]][selected_gem[1]
-                                      ] = list[selected_gem[0]][[selected_gem[1]+1]]
-                list[selected_gem[0]][[selected_gem[1]+1]] = temp
-                if (checkMatchHor() == False and checkMatchVert() == False):
-                    drawswap(selected_gem2, selected_gem)
-                    list[selected_gem[0]][[selected_gem[1]+1]
-                                          ] = list[selected_gem[0]][selected_gem[1]]
-                    list[selected_gem[0]][selected_gem[1]] = temp
-    except:
-        print("Invalid Move")                
-    startGame()
-
-
-# checks for matches
-def checkMatchHor():
-    global score
-    matchMade = False
-    for row in range(0, size, 1):
-        for column in range(0, size-1, 1):
-            counter = 0
-            for remainingcol in range(1, size-column, 1):
-                if list[row][column] == list[row][column+remainingcol]:
-                    counter += 1
-                else:
-                    break
-            if (counter >= 2):
-                matchMade = True
-                score += counter
-                for i in range(0, counter+1, 1):
-                    list[row][column+i] = 0
-    return matchMade
-
-# read above comment
-def checkMatchVert():
-    global score
-    matchMade = False
-    for column in range(0, size, 1):
-        for row in range(0, size-1, 1):
-            counter = 0
-            for remainingrow in range(1, size-row, 1):
-                if list[row][column] == list[row+remainingrow][column]:
-                    counter += 1
-                else:
-                    break
-            if (counter >= 2):
-                matchMade = True
-                score += counter
-                for i in range(0, counter+1, 1):
-                    list[row+i][column] = 0
-    return matchMade
-
-# i forget how this works, just think gravity ig
-def dropJewel():
-    for row in range(size-1, 0, -1):
-        for column in range(0, size, 1):
-            x = list[row][column]
-            if (x == 0):
-                list[row][column] = list[row-1][column]
-                list[row-1][column] = 0
-                if (list[row][column] != 0):
-                    dropJewel()
-
-# segregate the turtles
-def turtleChange(num):
-    colors = ["white", "red", "green", "orange", "blue", "brown"]
-    shapes = ["circle", "circle", "triangle", "square", "turtle", "arrow"]
-    tsize = [1.5, 1, 1, 1, 1, 1]
-
-    drawer.color(colors[num])
-    drawer.shape(shapes[num])
-    drawer.shapesize(tsize[num])
-
-# bobby wrote this go ask him
-def drawboard():
-    tf = True
-    while tf:
-        t.tracer(0,0)
-        global list, size
-        for row in range(0, size, 1):
-            for column in range(size-1, -1, -1):
-                drawer.goto(column*50-200, 250-(row*50))
-                turtleChange(list[row][column])
-                drawer.stamp()
-        t.update()
-        tf = False
-
-def drawswap(exception1, exception2): #put after the swap in the code above not before
-    y=0
-    while y<51:
-        t.tracer(0,0)
-        global list, size
-        for row in range(0, size, 1):
-            for column in range(size-1, -1, -1):
-                drawer.goto(column*50-200, 250-(row*50))
-                if (row, column)==exception2 and exception1[0] == exception2[0]: #across checking ::could be plus y
-                    drawer.goto(column*50-200+y, 250-(row*50))
-                if (row, column)==exception1 and exception1[0] == exception2[0]: #across checking  :: could be -y
-                    drawer.goto(column*50-200-y, 250-(row*50))
-                if (row, column)==exception2 and exception1[1] == exception2[1]: #could be -x
-                    drawer.goto(column*50-200, 300-(row*50)-y)
-                if (row, column)==exception1 and exception1[1] == exception2[1]: #could be +x
-                    drawer.goto(column*50-200, 200-(row*50)+y)
-                # print("test")
-                turtleChange(list[row][column])
-                drawer.stamp()
-        
-        t.update()
-        drawer.clear()
-        y+=2
-
-def drawdrop():
-    #checks how many spots each column needs to decend
-    dropamount = []
-    dropindex = []
-    for column in range(0, size, 1):
-        amount = 0
-        index = -1
-        for row in range(0, size-1, 1):
-            if (list[row][column] == 0):
-                amount += 1
-                if (index == -1):
-                    index = row
-        dropamount.append(amount)
-        dropindex.append(index)
-
-    y = 0
-    while y <= max(dropamount) * 50:
-        t.tracer(0,0)
-        for row in range(0, size, 1):
-            for column in range(0, size, 1):
-                drawer.goto(column*50-200, 250-(row*50))
-                if row < dropindex[column]:
-                    if y < dropamount[column]*50:
-                        drawer.goto(column*50-200, 250-(row*50)-y)  
-                    else:
-                        drawer.goto(column*50-200, 250-(row*50)-(50*dropamount[column]))
-                turtleChange(list[row][column])
-                if list[row][column] != 0:
-                    drawer.stamp()
-        t.update()
-        drawer.clear()
-        y+=5
-    time.sleep(0.15)
-
-# start
-def startGame():
-    recurse = False
-    if checkMatchHor() == True:
-        recurse = True
-    if checkMatchVert() == True:
-        recurse = True
-    if game_start == True:
-        drawdrop()
-    dropJewel()
-    fillSlots()
-    if recurse == True:
-        startGame()
-        drawer.clear()
-    drawer.clear()
-    drawboard()
-
-# gets the coordinates of the gem pressed
-def select_gem(x, y):
-    global selected_gem
-    column = round((x+200)/50)
-    row = round(9-((y+200)/50))
-    selected_gem = (row, column)
-    print(selected_gem)
-
-# key binds
-def up():
-    swap("up")
+    for a in range(70):
+        if a < 10:
+            painter.color("white")
+        else:
+            painter.color("black")
+        for i in range(4):
+            if i == 0 or i == 2:
+                painter.forward(250-a)
+            else:
+                painter.forward(70-a)
+            painter.left(90)
    
-def left():
-    swap("left")
+    painter.color("white")
+    for i in range(4):
+        if i == 0 or i == 2:
+            painter.forward(250)
+        else:
+            painter.forward(70)
+        painter.left(90)
 
-def down():
-    swap("down")
+    # Game title text
+    painter.penup()
+    painter.color("white")
+    painter.goto(painter.xcor()+15, painter.ycor()+10)
+    font = ("Arial", 30, "normal")
+    painter.write("Turtle Crush", font=font)
 
-def right():
-    swap("right")
+    # Score text
+    painter.penup()
+    painter.goto(-315, 0)
+    font = ("Arial", 20, "normal")
+    painter.write("Score", font=font)
 
-def printBoard():
-    print(list)
+    painter.penup()
+    painter.goto(-400, painter.ycor()-50)
+    painter.pendown()
+    for i in range(4):
+        if i == 0 or i == 2:
+            painter.forward(250)
+        else:
+            painter.forward(50)
+        painter.left(90)
 
-def test():
-    global score
-    print(score)
+    # How to play text
+    painter.penup()
+    painter.goto(-415, -210)
+    font = ("Arial", 10, "normal")
+    painter.write('''
+    
+    How to play:
+    Make matches of three or more objects. 
+    To make matches, click on an object you 
+    want to move, and use W,A,S, and D to 
+    move it in the desired direction. Matches
+    can only be made with adjacent objects.
+    The objective is to get the highest score 
+    possible in the allotted time ''', font=font)
 
-def selectedGem():
-    print(selected_gem)
+    #Start text
+    start_turtle = turtle.Turtle()
+    start_turtle.hideturtle()
+    start = False
+    turtle.tracer(1,1)
+    while start == False:
+        start_turtle.penup()
+        start_turtle.color("white")
+        start_turtle.goto(-355, 140)
+        font = ("Arial", 17, "normal")
+        start_turtle.write("Press P to Start", font=font)
+        time.sleep(.5)
+        start_turtle.clear()
+        time.sleep(.5)
+    turtle.tracer(0,0)
 
-# listening for key presses
-wn.onscreenclick(select_gem)
-wn.onkeypress(up, "w")
-wn.onkeypress(left, "a")
-wn.onkeypress(down, "s")
-wn.onkeypress(right, "d")
-
-wn.onkeypress(printBoard, "p")
-wn.onkeypress(test, "t")
-wn.onkeypress((selectedGem), "g")
-wn.onkeypress(drawboard, "u")
-wn.listen()
-
-# main functions
-startGame()
-game_start = True
-
-wn.mainloop()
+    turtle.update()
+    turtle.clear()
