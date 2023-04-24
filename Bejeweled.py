@@ -28,7 +28,6 @@ def fillSlots():
         for column in range(size-1, -1, -1):
             if (list[row][column] == 0):
                 list[row][column] = rand.randint(1, 5)
-    drawboard()
 
 def swap(direction):
     temp = list[selected_gem[0]][selected_gem[1]]
@@ -191,17 +190,13 @@ def drawswap(exception1, exception2): #put after the swap in the code above not 
 def drawdrop():
     #checks how many spots each column needs to decend
     dropamount = []
-    dropindex = []
     for column in range(0, size, 1):
-        amount = 0
-        index = -1
-        for row in range(0, size-1, 1):
-            if (list[row][column] == 0):
-                amount += 1
-                if (index == -1):
-                    index = row
-        dropamount.append(amount)
-        dropindex.append(index)
+        for row in range(0, size, 1):
+            amount = 0
+            for remrow in range(row, size, 1):
+                if (list[remrow][column] == 0 and list[row][column] != 0):
+                    amount += 1
+            dropamount.append(amount)
 
     y = 0
     while y <= max(dropamount) * 50:
@@ -209,11 +204,10 @@ def drawdrop():
         for row in range(0, size, 1):
             for column in range(0, size, 1):
                 drawer.goto(column*50-200, 250-(row*50))
-                if row < dropindex[column]:
-                    if y < dropamount[column]*50:
-                        drawer.goto(column*50-200, 250-(row*50)-y)  
-                    else:
-                        drawer.goto(column*50-200, 250-(row*50)-(50*dropamount[column]))
+                if y < dropamount[column*10 + row]*50:
+                    drawer.goto(column*50-200, 250-(row*50)-y)  
+                else:
+                    drawer.goto(column*50-200, 250-(row*50)-(50*dropamount[column*10 + row]))
                 turtleChange(list[row][column])
                 if list[row][column] != 0:
                     drawer.stamp()
@@ -245,7 +239,6 @@ def select_gem(x, y):
     column = round((x+200)/50)
     row = round(9-((y+200)/50))
     selected_gem = (row, column)
-    print(selected_gem)
 
 # key binds
 def up():
