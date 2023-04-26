@@ -1,5 +1,9 @@
 # imports
 import turtle as t
+from PIL import Image
+
+#Global Variables
+leaderboardFile = "Turtle_Crush_Leaders.txt"
 
 #turtle setup
 board_turtle = t.Turtle()
@@ -114,4 +118,116 @@ while tf:
     6 in a row = 87000 points
     ''', font=font)
 
-#def made_leaderboard():
+#Leaderboard----------------------------------------------------------------------------------
+
+def getNames():
+    names = []
+    lb = open(leaderboardFile, "r") 
+
+    for line in lb:
+        player_name = ""
+        index = 0
+        while (line[index] != ","):
+            player_name += line[index]
+            index += 1
+    
+        names.append(player_name)
+
+    lb.close()
+    return names
+    
+
+def getScores():
+  lb = open(leaderboardFile, "r")
+ 
+  scores = []
+  for line in lb:
+    player_score = ""    
+    index = 0
+    while (line[index] != ","):
+        index += 1
+    index += 1    
+    while(line[index] != "\n"):
+      player_score += (line[index])
+      index+=1
+ 
+    scores.append(int(player_score))
+
+  lb.close()
+ 
+  return scores
+
+def promptName():
+    board_turtle.clear()
+    board_turtle.goto(0,0)
+    board_turtle.write("You made the leaderboard! Enter your name into the terminal", font=title_font)
+    return input("Enter name:")
+
+def madeLeaderboard(player_score):
+    lb_scores = getScores()
+
+    if len(lb_scores) < 7 or player_score > lb_scores[6]:
+        return True
+    else:
+        return False
+
+def updateLeaderboard(playername, player_score):
+    lb_names = getNames()
+    lb_scores = getScores()
+    
+    index = 0
+    for i in range(len(lb_scores)):
+
+        if (lb_scores[index] < player_score):
+            break
+        else:
+            index += 1
+    
+    lb_names.insert(index, playername)
+    lb_scores.insert(index, player_score)
+    
+    if (len(lb_scores) > 5):
+        lb_names.pop()
+        lb_scores.pop()
+    
+    leaderboard_file = open(leaderboardFile, "w")
+
+    index = 0
+    for index in range(5):
+        leaderboard_file.write(lb_names[index] + "," + str(lb_scores[index]) + "\n")
+    
+    leaderboard_file.close()
+
+def printLeaderboard():
+    lb_names = getNames()
+    lb_scores = getScores()
+
+    board_turtle.clear()
+    for index in range(len(lb_names)):
+        board_turtle.write(str(index + 1) + "\t" + lb_names[index] + "\t" + str(lb_scores[index]), font=title_font)
+        board_turtle.goto(0,int(board_turtle.ycor())-50)
+
+
+
+# Change Background buttons
+arrow_font = ("Arial", 20, "normal")
+
+board_turtle.pensize(8)
+board_turtle.hideturtle()
+board_turtle.goto(360, -145)
+board_turtle.write("Background", font=arrow_font)
+
+def draw_arrow(xcor, ycor, heading, angle):
+    board_turtle.up()
+    board_turtle.goto(xcor,ycor)
+    board_turtle.down()
+    board_turtle.seth(heading)
+    board_turtle.forward(30)
+    board_turtle.right(angle)
+    board_turtle.forward(30)
+
+draw_arrow(350, -150, 135, 90)
+draw_arrow(515, -150, 45, 270)
+
+
+
