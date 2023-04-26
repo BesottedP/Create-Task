@@ -9,10 +9,10 @@ from PIL import Image
 wn = t.Screen()
 wn.bgcolor("white")
 wn.setup(1278, 796)
-image = Image.open('background_3x.gif')
-image_resized = image.resize((1278,796))
-image_resized.save('background_3x.gif')
-wn.bgpic("background_3x.gif")
+# image = Image.open('background_3.gif')
+# image_resized = image.resize((1278,796))
+# image_resized.save('background_3.gif')
+wn.bgpic("background_1.gif")
 
 #Create GUI
 import GUI
@@ -51,7 +51,7 @@ def updateTimer():
     if time_remaining == 0:
         timer_finished = True
         timer_turtle.write("0", font=timer_font)
-        endGame()
+        endGame(score)
     else:
         timer_turtle.write(str(time_remaining), font=timer_font)
         time_remaining -= 1
@@ -224,7 +224,6 @@ def checkMatchHor():
                     break
             if (counter >= 2):
                 matchMade = True
-                print(counter)
                 score += (math.factorial(counter+1))*50
                 for i in range(0, counter+1, 1):
                     list[row][column+i] = 0
@@ -244,7 +243,6 @@ def checkMatchVert():
                     break
             if (counter >= 2):
                 matchMade = True
-                print(counter)
                 score += (math.factorial(counter+1))*50
                 for i in range(0, counter+1, 1):
                     list[row+i][column] = 0
@@ -264,6 +262,17 @@ def drawboard():
         t.update()
         tf = False
 
+def texture_pack(x, y):
+    a = 300
+    if x > 325 and x < 350:
+        if y > -150 and y < -105:
+            a-=1      
+    elif x > 515 and x < 540:
+        if y > -150 and y < -105:
+            a+=1
+
+    b = a%3
+    wn.bgpic('background_' + str(b) + '.gif')
 # start
 def startGame():
     global score
@@ -283,9 +292,12 @@ def startGame():
         startGame()
     gem_turtle.clear()
     drawboard()
-
-def endGame():
-    GUI.updateLeaderboard(score)
+    
+def endGame(player_score):
+    if GUI.madeLeaderboard(player_score) == True:
+        gem_turtle.clear()
+        GUI.updateLeaderboard(GUI.promptName(), player_score)
+    GUI.printLeaderboard()
 
 # key binds
 def up():
@@ -316,6 +328,7 @@ wn.onkeypress(up, "w")
 wn.onkeypress(left, "a")
 wn.onkeypress(down, "s")
 wn.onkeypress(right, "d")
+wn.onscreenclick(texture_pack)
 wn.listen()
 
 # main functions
