@@ -113,3 +113,5 @@ while tf:
     5 in a row = 15000 points
     6 in a row = 87000 points
     ''', font=font)
+
+#def made_leaderboard():
