@@ -1,5 +1,4 @@
 # imports
-import GUI
 import math
 import random as rand
 import turtle as t
@@ -14,6 +13,9 @@ image = Image.open('background_3x.gif')
 image_resized = image.resize((1278,796))
 image_resized.save('background_3x.gif')
 wn.bgpic("background_3x.gif")
+
+#Create GUI
+import GUI
 
 # turtle setup
 gem_turtle = t.Turtle()
@@ -49,6 +51,7 @@ def updateTimer():
     if time_remaining == 0:
         timer_finished = True
         timer_turtle.write("0", font=timer_font)
+        endGame()
     else:
         timer_turtle.write(str(time_remaining), font=timer_font)
         time_remaining -= 1
@@ -280,6 +283,9 @@ def startGame():
         startGame()
     gem_turtle.clear()
     drawboard()
+
+def endGame():
+    GUI.updateLeaderboard(score)
 
 # key binds
 def up():
