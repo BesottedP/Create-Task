@@ -159,8 +159,9 @@ def getScores():
 
 def promptName():
     board_turtle.clear()
-    board_turtle.goto(0,0)
-    board_turtle.write("You made the leaderboard! Enter your name into the terminal", font=title_font)
+    board_turtle.up()
+    board_turtle.goto(-300,0)
+    board_turtle.write("You made the leaderboard!" + "\n" + "Enter your name into the terminal", font=title_font)
     return input("Enter name:")
 
 def madeLeaderboard(player_score):
@@ -177,7 +178,6 @@ def updateLeaderboard(playername, player_score):
     
     index = 0
     for i in range(len(lb_scores)):
-
         if (lb_scores[index] < player_score):
             break
         else:
@@ -186,14 +186,14 @@ def updateLeaderboard(playername, player_score):
     lb_names.insert(index, playername)
     lb_scores.insert(index, player_score)
     
-    if (len(lb_scores) > 5):
+    if (len(lb_scores) > 7):
         lb_names.pop()
         lb_scores.pop()
     
     leaderboard_file = open(leaderboardFile, "w")
 
     index = 0
-    for index in range(5):
+    for index in range(len(lb_scores)):
         leaderboard_file.write(lb_names[index] + "," + str(lb_scores[index]) + "\n")
     
     leaderboard_file.close()
@@ -203,11 +203,21 @@ def printLeaderboard():
     lb_scores = getScores()
 
     board_turtle.clear()
+    board_turtle.up()
+
     for index in range(len(lb_names)):
+        if(index == 0):
+            board_turtle.color("gold")
+        elif(index == 1):
+            board_turtle.color("silver")
+        elif(index == 2):
+            board_turtle.color("brown")
+        else:
+            board_turtle.color("white")
+
+        board_turtle.goto(-200,200-(75*index))
         board_turtle.write(str(index + 1) + "\t" + lb_names[index] + "\t" + str(lb_scores[index]), font=title_font)
-        board_turtle.goto(0,int(board_turtle.ycor())-50)
-
-
+    
 
 # Change Background buttons
 arrow_font = ("Arial", 20, "normal")
