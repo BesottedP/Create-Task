@@ -1,6 +1,5 @@
 # imports
 import math
-import time
 import random as rand
 import turtle as t
 import numpy as np
@@ -12,7 +11,7 @@ wn.bgcolor("white")
 wn.setup(1278, 796)
 wn.bgpic("background_1.gif")
 
-#Create GUI
+#Create GUI, we import this later to avoid the blip when the program opens
 import GUI
 
 # turtle setup
@@ -42,27 +41,31 @@ list = np.zeros((size, size), dtype=int)
 selected_gem = (None, None)
 bg_list = ["background_1.gif","background_2.gif","background_3.gif"]
 
-
+#updates the time_remaining, and calls functions based on the timer status
 def updateTimer():
     global time_remaining, timer_finished
     timer_turtle.goto(-475, -175)
     timer_font = ("Arial", 30, "normal")
     timer_turtle.clear()
+    #Calls the end game function when the timer reaches 0
     if time_remaining == 0:
         timer_finished = True
         timer_turtle.write("0", font=timer_font)
         endGame(score)
+    #Subtracts one from the timer, and calls the function again 1 second later
     else:
         timer_turtle.write(str(time_remaining), font=timer_font)
         time_remaining -= 1
         timer_turtle.getscreen().ontimer(updateTimer, 1000)
 
+#Writes the current score
 def updateScore():
     score_turtle.goto(-475, -47)
     score_turtle.clear()
     score_font = ("Arial", 30, "normal")
     score_turtle.write(score, font=score_font)
 
+#Changes the attributes of the gem drawer
 def turtleChange(num):
     colors = ["white", "red", "green", "orange", "blue", "brown"]
     shapes = ["circle", "circle", "triangle", "square", "turtle", "arrow"]
@@ -78,81 +81,103 @@ def select_gem(x, y):
     column = round((x+200)/50)
     row = round(9-((y+200)/50))
     selected_gem = (row, column)
+    #Calls the texture pack function with the same coords
     texture_pack(x,y)
 
-#fill
+#fills all empty spaces (when the value of a space = 0) with a random value 1-5
 def fillSlots():
     for row in range(size-1, -1, -1):
         for column in range(size-1, -1, -1):
             if (list[row][column] == 0):
                 list[row][column] = rand.randint(1, 5)
 
+#Contains all swap functionality
 def swap(direction):
+    #Checks if the game has ended, nothing will occur if the timer is finished
     if timer_finished == False:
         temp = list[selected_gem[0]][selected_gem[1]]
+        #Tries each possible way the gem can move (the 4 cardinal directions)
         try:
             if direction == "down":
-                    if (selected_gem[0] == size-1):
-                            raise Exception
-                    selected_gem2 = (selected_gem[0]+1, selected_gem[1])
-                    list[selected_gem[0]][selected_gem[1]
-                                        ] = list[selected_gem[0]+1][[selected_gem[1]]]
-                    list[selected_gem[0]+1][[selected_gem[1]]] = temp
+                #If the movement goes out of the board, call an exception which is handled later
+                if (selected_gem[0] == size-1):
+                        raise Exception
+                #Swaps the current selected gem with the gem underneath it
+                selected_gem2 = (selected_gem[0]+1, selected_gem[1])
+                list[selected_gem[0]][selected_gem[1]
+                                    ] = list[selected_gem[0]+1][[selected_gem[1]]]
+                list[selected_gem[0]+1][[selected_gem[1]]] = temp
+                #Calls drawswap with the two gems that are swapping
+                drawswap(selected_gem, selected_gem2)
+                #Checks if any matches were made, if not, then undo the swap and draw the swap backwards
+                if (checkMatchHor() == False and checkMatchVert() == False):
+                    list[selected_gem[0]+1][[selected_gem[1]]
+                                            ] = list[selected_gem[0]][selected_gem[1]]
+                    list[selected_gem[0]][selected_gem[1]] = temp
                     drawswap(selected_gem, selected_gem2)
-                    if (checkMatchHor() == False and checkMatchVert() == False):
-                        list[selected_gem[0]+1][[selected_gem[1]]
-                                                ] = list[selected_gem[0]][selected_gem[1]]
-                        list[selected_gem[0]][selected_gem[1]] = temp
-                        drawswap(selected_gem, selected_gem2)
             elif direction == "up":
-                    if (selected_gem[0] == 0):
-                        raise Exception
-                    selected_gem2 = (selected_gem[0]-1, selected_gem[1])
-                    list[selected_gem[0]][selected_gem[1]
-                                        ] = list[selected_gem[0]-1][[selected_gem[1]]]
-                    list[selected_gem[0]-1][[selected_gem[1]]] = temp
+                #If the movement goes out of the board, call an exception which is handled later
+                if (selected_gem[0] == 0):
+                    raise Exception
+                #Swaps the current selected gem with the gem above it
+                selected_gem2 = (selected_gem[0]-1, selected_gem[1])
+                list[selected_gem[0]][selected_gem[1]
+                                    ] = list[selected_gem[0]-1][[selected_gem[1]]]
+                list[selected_gem[0]-1][[selected_gem[1]]] = temp
+                #Calls drawswap with the two gems that are swapping
+                drawswap(selected_gem2, selected_gem)
+                #Checks if any matches were made, if not, then undo the swap and draw the swap backwards
+                if (checkMatchHor() == False and checkMatchVert() == False):
+                    list[selected_gem[0]-1][[selected_gem[1]]
+                                            ] = list[selected_gem[0]][selected_gem[1]]
+                    list[selected_gem[0]][selected_gem[1]] = temp
                     drawswap(selected_gem2, selected_gem)
-                    if (checkMatchHor() == False and checkMatchVert() == False):
-                        list[selected_gem[0]-1][[selected_gem[1]]
-                                                ] = list[selected_gem[0]][selected_gem[1]]
-                        list[selected_gem[0]][selected_gem[1]] = temp
-                        drawswap(selected_gem2, selected_gem)
             elif direction == "left":
-                    if (selected_gem[1] == 0):
-                        raise Exception
-                    selected_gem2 = (selected_gem[0], selected_gem[1]-1)
+                #If the movement goes out of the board, call an exception which is handled later
+                if (selected_gem[1] == 0):
+                    raise Exception
+                #Swaps the current selected gem with the gem on the left
+                selected_gem2 = (selected_gem[0], selected_gem[1]-1)
+                #Calls drawswap with the two gems that are swapping
+                drawswap(selected_gem, selected_gem2)
+                #Checks if any matches were made, if not, then undo the swap and draw the swap backwards
+                list[selected_gem[0]][selected_gem[1]
+                                    ] = list[selected_gem[0]][[selected_gem[1]-1]]
+                list[selected_gem[0]][[selected_gem[1]-1]] = temp
+                if (checkMatchHor() == False and checkMatchVert() == False):
                     drawswap(selected_gem, selected_gem2)
-                    list[selected_gem[0]][selected_gem[1]
-                                        ] = list[selected_gem[0]][[selected_gem[1]-1]]
-                    list[selected_gem[0]][[selected_gem[1]-1]] = temp
-                    if (checkMatchHor() == False and checkMatchVert() == False):
-                        drawswap(selected_gem, selected_gem2)
-                        list[selected_gem[0]][[selected_gem[1]-1]
-                                            ] = list[selected_gem[0]][selected_gem[1]]
-                        list[selected_gem[0]][selected_gem[1]] = temp
-
+                    list[selected_gem[0]][[selected_gem[1]-1]
+                                        ] = list[selected_gem[0]][selected_gem[1]]
+                    list[selected_gem[0]][selected_gem[1]] = temp
             elif direction == "right":
-                    if (selected_gem[1] == size-1):
-                        raise Exception
-                    selected_gem2 = (selected_gem[0], selected_gem[1]+1)
+                #If the movement goes out of the board, call an exception which is handled later
+                if (selected_gem[1] == size-1):
+                    raise Exception
+                #Swaps the current selected gem with the gem on the right
+                selected_gem2 = (selected_gem[0], selected_gem[1]+1)
+                #Calls drawswap with the two gems that are swapping
+                drawswap(selected_gem2, selected_gem)
+                #Checks if any matches were made, if not, then undo the swap and draw the swap backwards
+                list[selected_gem[0]][selected_gem[1]
+                                    ] = list[selected_gem[0]][[selected_gem[1]+1]]
+                list[selected_gem[0]][[selected_gem[1]+1]] = temp
+                if (checkMatchHor() == False and checkMatchVert() == False):
                     drawswap(selected_gem2, selected_gem)
-                    list[selected_gem[0]][selected_gem[1]
-                                        ] = list[selected_gem[0]][[selected_gem[1]+1]]
-                    list[selected_gem[0]][[selected_gem[1]+1]] = temp
-                    if (checkMatchHor() == False and checkMatchVert() == False):
-                        drawswap(selected_gem2, selected_gem)
-                        list[selected_gem[0]][[selected_gem[1]+1]
-                                            ] = list[selected_gem[0]][selected_gem[1]]
-                        list[selected_gem[0]][selected_gem[1]] = temp
+                    list[selected_gem[0]][[selected_gem[1]+1]
+                                        ] = list[selected_gem[0]][selected_gem[1]]
+                    list[selected_gem[0]][selected_gem[1]] = temp
+        #When an exception is called, this will be called
         except:
-            print("Invalid Move")                
+            print("Invalid Move")       
         startGame()
 
-def drawswap(exception1, exception2): #put after the swap in the code above not before
+#Draws the swap animation
+def drawswap(exception1, exception2): 
     y=0
     while y<51:
         t.tracer(0,0)
         global list, size
+        #Redraws the board 50/y times, each time moving the affected turtles by one pixel
         for row in range(0, size, 1):
             for column in range(size-1, -1, -1):
                 gem_turtle.goto(column*50-200, 250-(row*50))
@@ -164,7 +189,6 @@ def drawswap(exception1, exception2): #put after the swap in the code above not 
                     gem_turtle.goto(column*50-200, 300-(row*50)-y)
                 if (row, column)==exception1 and exception1[1] == exception2[1]: #could be +x
                     gem_turtle.goto(column*50-200, 200-(row*50)+y)
-                # print("test")
                 turtleChange(list[row][column])
                 gem_turtle.stamp()
         
@@ -172,14 +196,17 @@ def drawswap(exception1, exception2): #put after the swap in the code above not 
         gem_turtle.clear()
         y+=3
         
-# i forget how this works, just think gravity ig
+#Drops all gems to their lowest possible possition, gems can be dropped when the space underneath has a value of 0
 def dropJewel():
+    #Loops through each gem, except the bottom most ones
     for row in range(size-1, 0, -1):
         for column in range(0, size, 1):
             x = list[row][column]
+            #If the value of the list at those coords are 0, move the above gem down a space
             if (x == 0):
                 list[row][column] = list[row-1][column]
                 list[row-1][column] = 0
+                #If the value that is pulled down is not empty, redo the function
                 if (list[row][column] != 0):
                     dropJewel()
 
