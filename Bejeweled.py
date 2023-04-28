@@ -35,11 +35,14 @@ timer_turtle.hideturtle()
 game_start = False
 score = 0
 size = 10
-time_remaining = 30
+time_remaining = 5
 timer_finished = False
 list = np.zeros((size, size), dtype=int)
 selected_gem = (None, None)
 bg_list = ["background_1.gif","background_2.gif","background_3.gif"]
+#https://www.pinterest.com/pin/519813981991979156/
+#https://www.pxfuel.com/en/query?q=bejeweled
+#https://wallup.net/bejeweled-planet-5/
 
 #updates the time_remaining, and calls functions based on the timer status
 def updateTimer():
@@ -81,8 +84,6 @@ def select_gem(x, y):
     column = round((x+200)/50)
     row = round(9-((y+200)/50))
     selected_gem = (row, column)
-    #Calls the texture pack function with the same coords
-    texture_pack(x,y)
 
 #fills all empty spaces (when the value of a space = 0) with a random value 1-5
 def fillSlots():
@@ -305,7 +306,7 @@ def texture_pack(x, y):
         if y > -150 and y < -105:
             a+=1
  
-    b = a%3
+    b = a%(len(bg_list))
     if x > 325 and x < 350 or x > 515 and x < 540:
         if y > -150 and y < -105:
             wn.bgpic('background_' + str(b+1) + '.gif')
@@ -353,6 +354,10 @@ def down():
 def right():
     swap("right")
 
+def click(x, y):
+    select_gem(x,y)
+    texture_pack(x,y)
+
 def printBoard():
     print(list)
 
@@ -364,7 +369,7 @@ def selectedGem():
     print(selected_gem)
 
 # listening for key presses
-wn.onscreenclick(select_gem)
+wn.onscreenclick(click)
 wn.onkeypress(up, "w")
 wn.onkeypress(left, "a")
 wn.onkeypress(down, "s")
