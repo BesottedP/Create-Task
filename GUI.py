@@ -1,5 +1,6 @@
 # imports
 import turtle as t
+import tkinter
 from PIL import Image
 
 #Global Variables
@@ -160,9 +161,9 @@ def getScores():
 def promptName():
     board_turtle.clear()
     board_turtle.up()
-    board_turtle.goto(-300,0)
-    board_turtle.write("You made the leaderboard!" + "\n" + "Enter your name into the terminal", font=title_font)
-    return input("Enter name:")
+    board_turtle.goto(-250,0)
+    board_turtle.write("You made the leaderboard!", font=title_font)
+    return t.textinput("Name", "What is your name?")
 
 def madeLeaderboard(player_score):
     lb_scores = getScores()

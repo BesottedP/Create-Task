@@ -35,7 +35,7 @@ timer_turtle.hideturtle()
 game_start = False
 score = 0
 size = 10
-time_remaining = 5
+time_remaining = 30
 timer_finished = False
 list = np.zeros((size, size), dtype=int)
 selected_gem = (None, None)
