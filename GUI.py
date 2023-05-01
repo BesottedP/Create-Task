@@ -216,7 +216,7 @@ def printLeaderboard():
             board_turtle.color("white")
 
         board_turtle.goto(-200,200-(75*index))
-        board_turtle.write(str(index + 1) + "\t" + lb_names[index] + "\t" + str(lb_scores[index]), font=title_font)
+        board_turtle.write(str(index + 1) + "\t" + lb_names[index] + "\t   " + str(lb_scores[index]), font=title_font)
     
 
 # Change Background buttons

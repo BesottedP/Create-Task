@@ -1,7 +1,7 @@
-player13,34500
-APCSP Student,27600
-player8,19200
-player12,15300
-player7,12900
-player3,9900
-player2,7500
+student14,36700
+student1,21600
+student4,19700
+student19,16400
+student2,12800
+student9,7500
+student15,2200
