@@ -277,7 +277,7 @@ def checkMatchVert():
                     list[row+i][column] = 0
     return matchMade
 
-# bobby wrote this go ask him
+#draws the board
 def drawboard():
     tf = True
     while tf:
@@ -291,6 +291,7 @@ def drawboard():
         t.update()
         tf = False
 
+#Changes the background
 a = 300
 def texture_pack(x, y):
     global a, bg_list
@@ -311,7 +312,7 @@ def texture_pack(x, y):
         if y > -150 and y < -105:
             wn.bgpic('background_' + str(b+1) + '.gif')
 
-# start
+# start game & game logic
 def startGame():
     global score
     recurse = False
@@ -330,7 +331,8 @@ def startGame():
         startGame()
     gem_turtle.clear()
     drawboard()
-    
+
+#End game logic and calls
 def endGame(player_score):
     gem_turtle.clear()
     timer_turtle.clear()
